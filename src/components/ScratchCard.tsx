@@ -16,7 +16,26 @@ export default function ScratchCard({
 	revealed
 }: ScratchCardProps) {
 	const canvasRef = useRef<HTMLCanvasElement | null>(null);
+	const imgRef = useRef<HTMLImageElement | null>(null);
 	const [isRevealed, setIsRevealed] = useState(revealed);
+	const [canvasSize, setCanvasSize] = useState({ width: 0, height: 0 });
+
+	// Ajustar tamaño del canvas al tamaño real de la imagen
+	useEffect(() => {
+		if (imgRef.current) {
+			const handleResize = () => {
+				if (imgRef.current) {
+					setCanvasSize({
+						width: imgRef.current.clientWidth,
+						height: imgRef.current.clientHeight
+					});
+				}
+			};
+			handleResize();
+			window.addEventListener("resize", handleResize);
+			return () => window.removeEventListener("resize", handleResize);
+		}
+	}, [image]);
 
 	useEffect(() => {
 		const canvas = canvasRef.current;
@@ -32,7 +51,7 @@ export default function ScratchCard({
 			}
 		}
 		setIsRevealed(revealed);
-	}, [image, revealed]);
+	}, [image, revealed, canvasSize]);
 
 	const checkReveal = () => {
 		const canvas = canvasRef.current;
@@ -71,7 +90,7 @@ export default function ScratchCard({
 		const y = e.clientY - rect.top;
 
 		ctx.beginPath();
-		ctx.arc(x, y, 20, 0, 2 * Math.PI);
+		ctx.arc(x, y, 70, 0, 2 * Math.PI);
 		ctx.fill();
 
 		onScratch();
@@ -79,30 +98,38 @@ export default function ScratchCard({
 	};
 
 	return (
-		<div
-			style={{
-				position: "relative",
-				width: "100px",
-				height: "100px",
-				margin: "0 auto"
-			}}
-		>
+		<div style={{ position: "relative", display: "inline-block", width: "100%", maxWidth: "500px" }}>
 			<canvas
 				ref={canvasRef}
-				width="100"
-				height="100"
+				width={canvasSize.width}
+				height={canvasSize.height}
 				style={{
 					position: "absolute",
 					top: 0,
 					left: 0,
-					cursor: "pointer"
+					cursor: "pointer",
+					width: "100%",
+					height: "auto"
 				}}
 				onMouseDown={handleScratch}
 			></canvas>
 			<img
+				ref={imgRef}
 				src={image}
 				alt="Scratch card"
-				style={{ width: "100%", height: "100%", objectFit: "cover" }}
+				style={{
+					width: "100%",
+					height: "auto",
+					display: "block"
+				}}
+				onLoad={() => {
+					if (imgRef.current) {
+						setCanvasSize({
+							width: imgRef.current.clientWidth,
+							height: imgRef.current.clientHeight
+						});
+					}
+				}}
 			/>
 		</div>
 	);
