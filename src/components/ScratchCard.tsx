@@ -19,15 +19,17 @@ useEffect(() => {
   if (canvas) {
     const ctx = canvas.getContext("2d");
     if (ctx) {
+      ctx.globalCompositeOperation = "source-over"; // reset modo
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
       if (!revealed) {
         ctx.fillStyle = "#ccc";
         ctx.fillRect(0, 0, canvas.width, canvas.height);
-      } else {
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
       }
     }
   }
-}, [revealed, image]);
+  setIsRevealed(revealed);
+}, [image, revealed]);
+
 
 useEffect(() => {
   setIsRevealed(revealed);
