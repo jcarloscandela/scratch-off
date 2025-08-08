@@ -19,7 +19,7 @@ export default function UnlockForm({ onUnlock }: UnlockFormProps) {
 
   return (
     <div style={{ maxWidth: "400px", margin: "0 auto", padding: "20px", border: "1px solid", borderRadius: "8px", backgroundColor: "#f9f9f9" }}>
-      <h2 style={{ marginBottom: "20px", color: "black" }}>Introduce la contraseña para desbloquear:</h2>
+      <h2 style={{ marginBottom: "20px", color: "black" }}>Clara, introduce la contraseña para desbloquear (pista año de tu no-nacimiento):</h2>
       <input
         type="password"
         value={password}
