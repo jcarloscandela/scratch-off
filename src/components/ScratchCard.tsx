@@ -5,15 +5,13 @@ import { useRef, useEffect, useState } from "react";
 interface ScratchCardProps {
 	image: string;
 	onScratch: () => void;
-	prizeText: string;
 	onRevealed: () => void;
-	revealed: boolean; // Control the revealed state from parent
+	revealed: boolean;
 }
 
 export default function ScratchCard({
 	image,
 	onScratch,
-	prizeText,
 	onRevealed,
 	revealed
 }: ScratchCardProps) {
@@ -25,7 +23,7 @@ export default function ScratchCard({
 		if (canvas) {
 			const ctx = canvas.getContext("2d");
 			if (ctx) {
-				ctx.globalCompositeOperation = "source-over"; // reset modo
+				ctx.globalCompositeOperation = "source-over";
 				ctx.clearRect(0, 0, canvas.width, canvas.height);
 				if (!revealed) {
 					ctx.fillStyle = "#ccc";
@@ -52,11 +50,9 @@ export default function ScratchCard({
 
 		const percent = (cleared / (canvas.width * canvas.height)) * 100;
 
-		// Cambiado el umbral al 85%
 		if (percent >= 85 && !isRevealed) {
 			setIsRevealed(true);
 			onRevealed();
-			// Limpia completamente el canvas para mostrar la imagen entera
 			ctx.clearRect(0, 0, canvas.width, canvas.height);
 		}
 	};
@@ -108,18 +104,6 @@ export default function ScratchCard({
 				alt="Scratch card"
 				style={{ width: "100%", height: "100%", objectFit: "cover" }}
 			/>
-			{isRevealed && (
-				<div
-					style={{
-						position: "absolute",
-						bottom: "-20px",
-						textAlign: "center",
-						width: "100%"
-					}}
-				>
-					{prizeText}
-				</div>
-			)}
 		</div>
 	);
 }

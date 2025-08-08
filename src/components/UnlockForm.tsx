@@ -10,7 +10,7 @@ export default function UnlockForm({ onUnlock }: UnlockFormProps) {
   const [password, setPassword] = useState("");
 
   const handleUnlock = () => {
-    if (password === "1995") {
+    if (password === "1993") {
       onUnlock();
     } else {
       alert("Contraseña incorrecta");
