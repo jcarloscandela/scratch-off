@@ -6,11 +6,16 @@ import ScratchCard from "../components/ScratchCard";
 
 export default function Home() {
 	const [isUnlocked, setIsUnlocked] = useState(false);
-	const [currentScratch, setCurrentScratch] = useState(() => Math.floor(Math.random() * 3));
+const [currentScratch, setCurrentScratch] = useState(0); // Ensure it starts with the first image
 	const [revealedStates, setRevealedStates] = useState<boolean[]>([false, false, false]);
 
-	const images = ["/1.jpg", "/2.jpg", "/3.JPG"];
-	const prizes = ["Premio 1", "Premio 2", "Premio 3"];
+	const images = ["/1.jpg", "/2.jpg","/3.JPG", "/4.JPG"];
+const prizes = [
+	"😢 Oh no... no ha habido suerte, sigue probando",
+	"🎉✨ ¡Afortunada! Vale por una noche de mimos 💖",
+	"🙈 Oh... tampoco ha habido suerte, suerte con el último 🍀",
+	"🌟🍽 ¡Afortunada! Vale por una cena o comida en una ⭐ Michelin"
+];
 
 	const btnStyle = {
 		padding: "10px 20px",
@@ -33,8 +38,8 @@ export default function Home() {
 					<h1 style={{ marginBottom: "20px" }}>Rasca y Gana</h1>
 					<div style={{ textAlign: "center" }}>
 						<h2>Rasca {currentScratch + 1}</h2>
-						<ScratchCard
-							image={images[currentScratch]}
+<ScratchCard
+image={images[currentScratch]} // Display the first image on load
 							onScratch={() => {}}
 							prizeText={prizes[currentScratch]}
 							onRevealed={() => {
