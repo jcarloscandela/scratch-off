@@ -19,9 +19,9 @@ export default function ScratchCard({
 	const imgRef = useRef<HTMLImageElement | null>(null);
 	const [isRevealed, setIsRevealed] = useState(revealed);
 	const [canvasSize, setCanvasSize] = useState({ width: 0, height: 0 });
-	const [imageLoaded, setImageLoaded] = useState(false); // Nuevo estado
+	const [imageLoaded, setImageLoaded] = useState(false);
+	const [isDrawing, setIsDrawing] = useState(false);
 
-	// Ajustar tamaño del canvas al tamaño real de la imagen
 	useEffect(() => {
 		if (imgRef.current) {
 			const handleResize = () => {
@@ -45,14 +45,12 @@ export default function ScratchCard({
 			if (ctx) {
 				ctx.globalCompositeOperation = "source-over";
 				ctx.clearRect(0, 0, canvas.width, canvas.height);
-				if (!revealed && imageLoaded) { // solo pintar si la imagen está cargada
+				if (!revealed && imageLoaded) {
 					ctx.fillStyle = "#ccc";
 					ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-					// Dibujar texto centrado
 					const fontSize = Math.min(canvas.width, canvas.height) / 10;
 					ctx.font = `${fontSize}px Arial`;
-					ctx.fillStyle = "#666"; // color del texto (oscuro sobre gris)
+					ctx.fillStyle = "#666";
 					ctx.textAlign = "center";
 					ctx.textBaseline = "middle";
 					ctx.fillText("Rasca para ver el premio", canvas.width / 2, canvas.height / 2);
@@ -65,19 +63,15 @@ export default function ScratchCard({
 	const checkReveal = () => {
 		const canvas = canvasRef.current;
 		if (!canvas) return;
-
 		const ctx = canvas.getContext("2d", { willReadFrequently: true });
 		if (!ctx) return;
 
 		const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
 		let cleared = 0;
-
 		for (let i = 3; i < imageData.data.length; i += 4) {
 			if (imageData.data[i] === 0) cleared++;
 		}
-
 		const percent = (cleared / (canvas.width * canvas.height)) * 100;
-
 		if (percent >= 90 && !isRevealed) {
 			setIsRevealed(true);
 			onRevealed();
@@ -85,32 +79,61 @@ export default function ScratchCard({
 		}
 	};
 
-	const handleScratch = (e: React.MouseEvent<HTMLCanvasElement>) => {
-		if (!imageLoaded) return; // Si la imagen no está cargada, no permitir rascar
-
+	const scratch = (x: number, y: number) => {
+		if (!imageLoaded) return;
 		const canvas = canvasRef.current;
 		if (!canvas) return;
-
 		const ctx = canvas.getContext("2d");
 		if (!ctx) return;
-
 		ctx.globalCompositeOperation = "destination-out";
-
-		const rect = canvas.getBoundingClientRect();
-		const x = e.clientX - rect.left;
-		const y = e.clientY - rect.top;
-
 		ctx.beginPath();
-		ctx.arc(x, y, 50, 0, 2 * Math.PI);
+		ctx.arc(x, y, 30, 0, 2 * Math.PI);
 		ctx.fill();
-
 		onScratch();
 		checkReveal();
 	};
 
+	const getPointerPos = (e: MouseEvent | TouchEvent) => {
+		const canvas = canvasRef.current;
+		if (!canvas) return { x: 0, y: 0 };
+		const rect = canvas.getBoundingClientRect();
+		let clientX = 0;
+		let clientY = 0;
+
+		if (e instanceof TouchEvent) {
+			clientX = e.touches[0].clientX;
+			clientY = e.touches[0].clientY;
+		} else {
+			clientX = e.clientX;
+			clientY = e.clientY;
+		}
+
+		return {
+			x: clientX - rect.left,
+			y: clientY - rect.top
+		};
+	};
+
+	const handleStart = (e: React.MouseEvent | React.TouchEvent) => {
+		e.preventDefault();
+		setIsDrawing(true);
+		const { x, y } = getPointerPos(e.nativeEvent as any);
+		scratch(x, y);
+	};
+
+	const handleMove = (e: React.MouseEvent | React.TouchEvent) => {
+		if (!isDrawing) return;
+		e.preventDefault();
+		const { x, y } = getPointerPos(e.nativeEvent as any);
+		scratch(x, y);
+	};
+
+	const handleEnd = () => {
+		setIsDrawing(false);
+	};
+
 	return (
 		<div style={{ position: "relative", display: "inline-block", width: "100%", maxWidth: "500px" }}>
-			{/* Renderizar el canvas solo si la imagen está cargada */}
 			{imageLoaded && (
 				<canvas
 					ref={canvasRef}
@@ -124,7 +147,13 @@ export default function ScratchCard({
 						width: "100%",
 						height: "auto"
 					}}
-					onMouseDown={handleScratch}
+					onMouseDown={handleStart}
+					onMouseMove={handleMove}
+					onMouseUp={handleEnd}
+					onMouseLeave={handleEnd}
+					onTouchStart={handleStart}
+					onTouchMove={handleMove}
+					onTouchEnd={handleEnd}
 				></canvas>
 			)}
 			<img
@@ -142,7 +171,7 @@ export default function ScratchCard({
 							width: imgRef.current.clientWidth,
 							height: imgRef.current.clientHeight
 						});
-						setImageLoaded(true); // Marcar la imagen como cargada aquí
+						setImageLoaded(true);
 					}
 				}}
 			/>
