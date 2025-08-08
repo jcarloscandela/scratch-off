@@ -48,6 +48,14 @@ export default function ScratchCard({
 				if (!revealed && imageLoaded) { // solo pintar si la imagen está cargada
 					ctx.fillStyle = "#ccc";
 					ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+					// Dibujar texto centrado
+					const fontSize = Math.min(canvas.width, canvas.height) / 10;
+					ctx.font = `${fontSize}px Arial`;
+					ctx.fillStyle = "#666"; // color del texto (oscuro sobre gris)
+					ctx.textAlign = "center";
+					ctx.textBaseline = "middle";
+					ctx.fillText("Rasca para ver el premio", canvas.width / 2, canvas.height / 2);
 				}
 			}
 		}
