@@ -3,26 +3,35 @@
 import { useRef, useEffect, useState } from "react";
 
 interface ScratchCardProps {
-	image: string;
-	onScratch: () => void;
-	prizeText: string;
-	onRevealed: () => void; // nueva prop para avisar al padre que se descubrió
+  image: string;
+  onScratch: () => void;
+  prizeText: string;
+  onRevealed: () => void;
+  revealed: boolean; // Control the revealed state from parent
 }
 
-export default function ScratchCard({ image, onScratch, prizeText, onRevealed }: ScratchCardProps) {
-	const canvasRef = useRef<HTMLCanvasElement | null>(null);
-	const [isRevealed, setIsRevealed] = useState(false);
+export default function ScratchCard({ image, onScratch, prizeText, onRevealed, revealed }: ScratchCardProps) {
+  const canvasRef = useRef<HTMLCanvasElement | null>(null);
+  const [isRevealed, setIsRevealed] = useState(revealed);
 
-	useEffect(() => {
-		const canvas = canvasRef.current;
-		if (canvas) {
-			const ctx = canvas.getContext("2d");
-			if (ctx) {
-				ctx.fillStyle = "#ccc";
-				ctx.fillRect(0, 0, canvas.width, canvas.height);
-			}
-		}
-	}, []);
+useEffect(() => {
+  const canvas = canvasRef.current;
+  if (canvas) {
+    const ctx = canvas.getContext("2d");
+    if (ctx) {
+      if (!revealed) {
+        ctx.fillStyle = "#ccc";
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+      } else {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+      }
+    }
+  }
+}, [revealed, image]);
+
+useEffect(() => {
+  setIsRevealed(revealed);
+}, [revealed]);
 
 	const checkReveal = () => {
 		const canvas = canvasRef.current;
@@ -39,7 +48,7 @@ export default function ScratchCard({ image, onScratch, prizeText, onRevealed }:
 		}
 
 		const percent = (cleared / (canvas.width * canvas.height)) * 100;
-		if (percent > 50 && !isRevealed) { // umbral del 50 %
+if (percent >= 99.9 && !isRevealed) { // umbral del 100%
 			setIsRevealed(true);
 			onRevealed();
 		}

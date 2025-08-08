@@ -7,7 +7,7 @@ import ScratchCard from "../components/ScratchCard";
 export default function Home() {
 	const [isUnlocked, setIsUnlocked] = useState(false);
 	const [currentScratch, setCurrentScratch] = useState(() => Math.floor(Math.random() * 3));
-	const [revealed, setRevealed] = useState(false);
+	const [revealedStates, setRevealedStates] = useState<boolean[]>([false, false, false]);
 
 	const images = ["/1.jpg", "/2.jpg", "/3.JPG"];
 	const prizes = ["Premio 1", "Premio 2", "Premio 3"];
@@ -37,7 +37,14 @@ export default function Home() {
 							image={images[currentScratch]}
 							onScratch={() => {}}
 							prizeText={prizes[currentScratch]}
-							onRevealed={() => setRevealed(true)}
+							onRevealed={() => {
+  setRevealedStates(prev => {
+    const newStates = [...prev];
+    newStates[currentScratch] = true;
+    return newStates;
+  });
+}}
+revealed={revealedStates[currentScratch]}
 						/>
 						<div style={{ marginTop: "20px" }}>
 							{currentScratch > 0 && (
@@ -48,12 +55,11 @@ export default function Home() {
 									Anterior
 								</button>
 							)}
-							{currentScratch < images.length - 1 && revealed && (
+							{currentScratch < images.length - 1 && revealedStates[currentScratch] && (
 								<button
-									onClick={() => {
-										setRevealed(false);
-										setCurrentScratch((prev) => Math.min(prev + 1, images.length - 1));
-									}}
+onClick={() => {
+  setCurrentScratch((prev) => Math.min(prev + 1, images.length - 1));
+}}
 									style={btnStyle}
 								>
 									Siguiente intento
