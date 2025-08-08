@@ -19,6 +19,7 @@ export default function ScratchCard({
 	const imgRef = useRef<HTMLImageElement | null>(null);
 	const [isRevealed, setIsRevealed] = useState(revealed);
 	const [canvasSize, setCanvasSize] = useState({ width: 0, height: 0 });
+	const [imageLoaded, setImageLoaded] = useState(false); // Nuevo estado
 
 	// Ajustar tamaño del canvas al tamaño real de la imagen
 	useEffect(() => {
@@ -44,14 +45,14 @@ export default function ScratchCard({
 			if (ctx) {
 				ctx.globalCompositeOperation = "source-over";
 				ctx.clearRect(0, 0, canvas.width, canvas.height);
-				if (!revealed) {
+				if (!revealed && imageLoaded) { // solo pintar si la imagen está cargada
 					ctx.fillStyle = "#ccc";
 					ctx.fillRect(0, 0, canvas.width, canvas.height);
 				}
 			}
 		}
 		setIsRevealed(revealed);
-	}, [image, revealed, canvasSize]);
+	}, [image, revealed, canvasSize, imageLoaded]);
 
 	const checkReveal = () => {
 		const canvas = canvasRef.current;
@@ -77,6 +78,8 @@ export default function ScratchCard({
 	};
 
 	const handleScratch = (e: React.MouseEvent<HTMLCanvasElement>) => {
+		if (!imageLoaded) return; // Si la imagen no está cargada, no permitir rascar
+
 		const canvas = canvasRef.current;
 		if (!canvas) return;
 
@@ -99,20 +102,23 @@ export default function ScratchCard({
 
 	return (
 		<div style={{ position: "relative", display: "inline-block", width: "100%", maxWidth: "500px" }}>
-			<canvas
-				ref={canvasRef}
-				width={canvasSize.width}
-				height={canvasSize.height}
-				style={{
-					position: "absolute",
-					top: 0,
-					left: 0,
-					cursor: "pointer",
-					width: "100%",
-					height: "auto"
-				}}
-				onMouseDown={handleScratch}
-			></canvas>
+			{/* Renderizar el canvas solo si la imagen está cargada */}
+			{imageLoaded && (
+				<canvas
+					ref={canvasRef}
+					width={canvasSize.width}
+					height={canvasSize.height}
+					style={{
+						position: "absolute",
+						top: 0,
+						left: 0,
+						cursor: "pointer",
+						width: "100%",
+						height: "auto"
+					}}
+					onMouseDown={handleScratch}
+				></canvas>
+			)}
 			<img
 				ref={imgRef}
 				src={image}
@@ -128,6 +134,7 @@ export default function ScratchCard({
 							width: imgRef.current.clientWidth,
 							height: imgRef.current.clientHeight
 						});
+						setImageLoaded(true); // Marcar la imagen como cargada aquí
 					}
 				}}
 			/>
