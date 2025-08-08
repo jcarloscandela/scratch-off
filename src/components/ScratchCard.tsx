@@ -117,14 +117,14 @@ export default function ScratchCard({
 	const handleStart = (e: React.MouseEvent | React.TouchEvent) => {
 		e.preventDefault();
 		setIsDrawing(true);
-		const { x, y } = getPointerPos(e.nativeEvent as any);
+		const { x, y } = getPointerPos(e.nativeEvent);
 		scratch(x, y);
 	};
 
 	const handleMove = (e: React.MouseEvent | React.TouchEvent) => {
 		if (!isDrawing) return;
 		e.preventDefault();
-		const { x, y } = getPointerPos(e.nativeEvent as any);
+		const { x, y } = getPointerPos(e.nativeEvent);
 		scratch(x, y);
 	};
 
