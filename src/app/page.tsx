@@ -9,19 +9,15 @@ export default function Home() {
   const [currentScratch, setCurrentScratch] = useState(() => Math.floor(Math.random() * 5));
 
   const images = [
-    "/file.svg",
-    "/globe.svg",
-    "/next.svg",
-    "/vercel.svg",
-    "/window.svg",
+    "/1.jpg",
+    "/2.jpg",
+    "/2.JPG",
   ];
 
   const prizes = [
     "Premio 1",
     "Premio 2",
     "Premio 3",
-    "Premio 4",
-    "Premio 5",
   ];
 
 
