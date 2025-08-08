@@ -3,37 +3,38 @@
 import { useRef, useEffect, useState } from "react";
 
 interface ScratchCardProps {
-  image: string;
-  onScratch: () => void;
-  prizeText: string;
-  onRevealed: () => void;
-  revealed: boolean; // Control the revealed state from parent
+	image: string;
+	onScratch: () => void;
+	prizeText: string;
+	onRevealed: () => void;
+	revealed: boolean; // Control the revealed state from parent
 }
 
-export default function ScratchCard({ image, onScratch, prizeText, onRevealed, revealed }: ScratchCardProps) {
-  const canvasRef = useRef<HTMLCanvasElement | null>(null);
-  const [isRevealed, setIsRevealed] = useState(revealed);
+export default function ScratchCard({
+	image,
+	onScratch,
+	prizeText,
+	onRevealed,
+	revealed
+}: ScratchCardProps) {
+	const canvasRef = useRef<HTMLCanvasElement | null>(null);
+	const [isRevealed, setIsRevealed] = useState(revealed);
 
-useEffect(() => {
-  const canvas = canvasRef.current;
-  if (canvas) {
-    const ctx = canvas.getContext("2d");
-    if (ctx) {
-      ctx.globalCompositeOperation = "source-over"; // reset modo
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-      if (!revealed) {
-        ctx.fillStyle = "#ccc";
-        ctx.fillRect(0, 0, canvas.width, canvas.height);
-      }
-    }
-  }
-  setIsRevealed(revealed);
-}, [image, revealed]);
-
-
-useEffect(() => {
-  setIsRevealed(revealed);
-}, [revealed]);
+	useEffect(() => {
+		const canvas = canvasRef.current;
+		if (canvas) {
+			const ctx = canvas.getContext("2d");
+			if (ctx) {
+				ctx.globalCompositeOperation = "source-over"; // reset modo
+				ctx.clearRect(0, 0, canvas.width, canvas.height);
+				if (!revealed) {
+					ctx.fillStyle = "#ccc";
+					ctx.fillRect(0, 0, canvas.width, canvas.height);
+				}
+			}
+		}
+		setIsRevealed(revealed);
+	}, [image, revealed]);
 
 	const checkReveal = () => {
 		const canvas = canvasRef.current;
@@ -50,9 +51,13 @@ useEffect(() => {
 		}
 
 		const percent = (cleared / (canvas.width * canvas.height)) * 100;
-if (percent >= 99.9 && !isRevealed) { // umbral del 100%
+
+		// Cambiado el umbral al 85%
+		if (percent >= 85 && !isRevealed) {
 			setIsRevealed(true);
 			onRevealed();
+			// Limpia completamente el canvas para mostrar la imagen entera
+			ctx.clearRect(0, 0, canvas.width, canvas.height);
 		}
 	};
 
@@ -78,12 +83,24 @@ if (percent >= 99.9 && !isRevealed) { // umbral del 100%
 	};
 
 	return (
-		<div style={{ position: "relative", width: "100px", height: "100px", margin: "0 auto" }}>
+		<div
+			style={{
+				position: "relative",
+				width: "100px",
+				height: "100px",
+				margin: "0 auto"
+			}}
+		>
 			<canvas
 				ref={canvasRef}
 				width="100"
 				height="100"
-				style={{ position: "absolute", top: 0, left: 0, cursor: "pointer" }}
+				style={{
+					position: "absolute",
+					top: 0,
+					left: 0,
+					cursor: "pointer"
+				}}
 				onMouseDown={handleScratch}
 			></canvas>
 			<img
@@ -92,7 +109,14 @@ if (percent >= 99.9 && !isRevealed) { // umbral del 100%
 				style={{ width: "100%", height: "100%", objectFit: "cover" }}
 			/>
 			{isRevealed && (
-				<div style={{ position: "absolute", bottom: "-20px", textAlign: "center", width: "100%" }}>
+				<div
+					style={{
+						position: "absolute",
+						bottom: "-20px",
+						textAlign: "center",
+						width: "100%"
+					}}
+				>
 					{prizeText}
 				</div>
 			)}
