@@ -11,7 +11,7 @@ export default function Home() {
   const images = [
     "/1.jpg",
     "/2.jpg",
-    "/2.JPG",
+    "/3.JPG",
   ];
 
   const prizes = [
@@ -34,6 +34,7 @@ export default function Home() {
             <ScratchCard
               image={images[currentScratch]}
               onScratch={() => {}}
+              prizeText={prizes[currentScratch]}
             />
 <div style={{ marginTop: "20px" }}>
   {currentScratch > 0 && (

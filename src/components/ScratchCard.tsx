@@ -5,9 +5,10 @@ import { useRef, useEffect } from "react";
 interface ScratchCardProps {
   image: string;
   onScratch: () => void;
+  prizeText: string;
 }
 
-export default function ScratchCard({ image, onScratch }: ScratchCardProps) {
+export default function ScratchCard({ image, onScratch, prizeText }: ScratchCardProps) {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
 
   useEffect(() => {
@@ -55,6 +56,9 @@ export default function ScratchCard({ image, onScratch }: ScratchCardProps) {
         alt="Scratch card"
         style={{ width: "100%", height: "100%", objectFit: "cover" }}
       />
+      <div style={{ position: "absolute", bottom: "-20px", textAlign: "center", width: "100%" }}>
+        {prizeText}
+      </div>
     </div>
   );
 }
