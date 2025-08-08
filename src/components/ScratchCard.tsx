@@ -69,7 +69,7 @@ export default function ScratchCard({
 
 		const percent = (cleared / (canvas.width * canvas.height)) * 100;
 
-		if (percent >= 85 && !isRevealed) {
+		if (percent >= 90 && !isRevealed) {
 			setIsRevealed(true);
 			onRevealed();
 			ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -90,7 +90,7 @@ export default function ScratchCard({
 		const y = e.clientY - rect.top;
 
 		ctx.beginPath();
-		ctx.arc(x, y, 70, 0, 2 * Math.PI);
+		ctx.arc(x, y, 50, 0, 2 * Math.PI);
 		ctx.fill();
 
 		onScratch();
